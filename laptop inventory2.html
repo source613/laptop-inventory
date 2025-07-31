@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Inventory System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 25px;
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            width: 200px;
+            outline: none;
+        }
+        
+        .search-bar input::placeholder {
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .search-bar button {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .filter-section label {
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .filter-section select {
+            padding: 10px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .add-btn {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .laptop-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .laptop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .laptop-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 3px;
+        }
+        
+        .laptop-info p {
+            opacity: 0.9;
+            font-size: 0.85rem;
+        }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status.available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.in-use {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status.maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .specs {
+            margin-bottom: 20px;
+        }
+        
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+        
+        .spec-label {
+            color: #666;
+        }
+        
+        .spec-value {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .edit-btn {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .delete-btn {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 500px;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.3rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e9ecef;
+            color: #666;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            grid-column: 1 / -1;
+        }
+        
+        .no-results i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+        
+        .no-results h3 {
+            font-size: 1.4rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .no-results p {
+            color: #999;
+            font-size: 1rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .search-bar {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .search-bar input {
+                width: 100%;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-section {
+                justify-content: center;
+            }
+            
+            .add-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .inventory-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .card-header {
+                padding: 12px;
+            }
+            
+            .laptop-info h3 {
+                font-size: 1.1rem;
+            }
+            
+            .spec-item {
+                font-size: 0.85rem;
+            }
+            
+            .price {
+                font-size: 1.1rem;
+            }
+            
+            .action-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-laptop"></i>
+                    <h1>Laptop Inventory</h1>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Search laptops...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="filter-section">
+                <label for="statusFilter">Filter:</label>
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="available">Available</option>
+                    <option value="in-use">In Use</option>
+                    <option value="maintenance">Maintenance</option>
+                </select>
+            </div>
+            <button class="add-btn" id="addLaptopBtn">
+                <i class="fas fa-plus"></i>
+                Add Laptop
+            </button>
+        </div>
+
+        <div class="inventory-grid" id="inventoryGrid">
+            <!-- Laptop cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div class="modal" id="laptopModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Laptop</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="laptopForm">
+                    <input type="hidden" id="laptopId">
+                    <div class="form-group">
+                        <label for="brand">Brand</label>
+                        <input type="text" id="brand" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="model">Model</label>
+                        <input type="text" id="model" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serialNumber">Serial Number</label>
+                        <input type="text" id="serialNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="processor">Processor</label>
+                        <input type="text" id="processor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ram">RAM</label>
+                        <input type="text" id="ram" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="storage">Storage</label>
+                        <input type="text" id="storage" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="screenSize">Screen Size</label>
+                        <input type="text" id="screenSize" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price ($)</label>
+                        <input type="number" id="price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseDate">Purchase Date</label>
+                        <input type="date" id="purchaseDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" required>
+                            <option value="available">Available</option>
+                            <option value="in-use">In Use</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample laptop data
+        let laptops = [
+            {
+                id: 1,
+                brand: "Dell",
+                model: "XPS 13",
+                serialNumber: "DLXPS13-001",
+                processor: "Intel i7-11800H",
+                ram: "16GB",
+                storage: "512GB SSD",
+                screenSize: "13.4\"",
+                price: 1299.99,
+                purchaseDate: "2023-01-15",
+                status: "available"
+            },
+            {
+                id: 2,
+                brand: "MacBook",
+                model: "Pro 16",
+                serialNumber: "MBP16-002",
+                processor: "M2 Pro",
+                ram: "32GB",
+                storage: "1TB SSD",
+                screenSize: "16.2\"",
+                price: 2499.99,
+                purchaseDate: "2023-03-22",
+                status: "in-use"
+            },
+            {
+                id: 3,
+                brand: "HP",
+                model: "Spectre x360",
+                serialNumber: "HPSX360-003",
+                processor: "Intel i5-1240P",
+                ram: "8GB",
+                storage: "256GB SSD",
+                screenSize: "13.5\"",
+                price: 1199.99,
+                purchaseDate: "2022-11-08",
+                status: "maintenance"
+            },
+            {
+                id: 4,
+                brand: "Lenovo",
+                model: "ThinkPad X1",
+                serialNumber: "LPX1-004",
+                processor: "Intel i7-1260P",
+                ram: "16GB",
+                storage: "512GB SSD",
+                screenSize: "14\"",
+                price: 1599.99,
+                purchaseDate: "2023-05-10",
+                status: "available"
+            }
+        ];
+
+        // DOM Elements
+        const inventoryGrid = document.getElementById('inventoryGrid');
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const addLaptopBtn = document.getElementById('addLaptopBtn');
+        const laptopModal = document.getElementById('laptopModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeBtn = document.querySelector('.close-btn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const laptopForm = document.getElementById('laptopForm');
+
+        // Initialize the app
+        function init() {
+            renderLaptops();
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            searchInput.addEventListener('input', renderLaptops);
+            statusFilter.addEventListener('change', renderLaptops);
+            addLaptopBtn.addEventListener('click', openAddModal);
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            saveBtn.addEventListener('click', saveLaptop);
+            laptopForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveLaptop();
+            });
+        }
+
+        // Render laptops based on filters
+        function renderLaptops() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const status = statusFilter.value;
+
+            const filteredLaptops = laptops.filter(laptop => {
+                const matchesSearch = laptop.brand.toLowerCase().includes(searchTerm) ||
+                                    laptop.model.toLowerCase().includes(searchTerm) ||
+                                    laptop.serialNumber.toLowerCase().includes(searchTerm);
+                const matchesStatus = status === 'all' || laptop.status === status;
+                return matchesSearch && matchesStatus;
+            });
+
+            if (filteredLaptops.length === 0) {
+                inventoryGrid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No laptops found</h3>
+                        <p>Try adjusting your search or filter criteria</p>
+                    </div>
+                `;
+                return;
+            }
+
+            inventoryGrid.innerHTML = filteredLaptops.map(laptop => `
+                <div class="laptop-card">
+                    <div class="card-header">
+                        <div class="laptop-info">
+                            <h3>${laptop.brand} ${laptop.model}</h3>
+                            <p>SN: ${laptop.serialNumber}</p>
+                        </div>
+                        <span class="status ${laptop.status.replace(' ', '-')}">${laptop.status}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="specs">
+                            <div class="spec-item">
+                                <span class="spec-label">Processor</span>
+                                <span class="spec-value">${laptop.processor}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">RAM</span>
+                                <span class="spec-value">${laptop.ram}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Storage</span>
+                                <span class="spec-value">${laptop.storage}</span>
+                            </div>
+                            <div class="spec-item">
+                                <span class="spec-label">Screen</span>
+                                <span class="spec-value">${laptop.screenSize}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="price">$${laptop.price.toFixed(2)}</div>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editLaptop(${laptop.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteLaptop(${laptop.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open add modal
+        function openAddModal() {
+            modalTitle.textContent = 'Add New Laptop';
+            laptopForm.reset();
+            document.getElementById('laptopId').value = '';
+            laptopModal.classList.add('active');
+        }
+
+        // Edit laptop
+        function editLaptop(id) {
+            const laptop = laptops.find(l => l.id === id);
+            if (!laptop) return;
+
+            modalTitle.textContent = 'Edit Laptop';
+            document.getElementById('laptopId').value = laptop.id;
+            document.getElementById('brand').value = laptop.brand;
+            document.getElementById('model').value = laptop.model;
+            document.getElementById('serialNumber').value = laptop.serialNumber;
+            document.getElementById('processor').value = laptop.processor;
+            document.getElementById('ram').value = laptop.ram;
+            document.getElementById('storage').value = laptop.storage;
+            document.getElementById('screenSize').value = laptop.screenSize;
+            document.getElementById('price').value = laptop.price;
+            document.getElementById('purchaseDate').value = laptop.purchaseDate;
+            document.getElementById('status').value = laptop.status;
+
+            laptopModal.classList.add('active');
+        }
+
+        // Save laptop
+        function saveLaptop() {
+            const id = document.getElementById('laptopId').value;
+            const laptop = {
+                brand: document.getElementById('brand').value,
+                model: document.getElementById('model').value,
+                serialNumber: document.getElementById('serialNumber').value,
+                processor: document.getElementById('processor').value,
+                ram: document.getElementById('ram').value,
+                storage: document.getElementById('storage').value,
+                screenSize: document.getElementById('screenSize').value,
+                price: parseFloat(document.getElementById('price').value),
+                purchaseDate: document.getElementById('purchaseDate').value,
+                status: document.getElementById('status').value
+            };
+
+            if (id) {
+                // Update existing laptop
+                const index = laptops.findIndex(l => l.id == id);
+                if (index !== -1) {
+                    laptops[index] = {...laptops[index], ...laptop};
+                }
+            } else {
+                // Add new laptop
+                laptop.id = Date.now();
+                laptops.push(laptop);
+            }
+
+            renderLaptops();
+            closeModal();
+        }
+
+        // Delete laptop
+        function deleteLaptop(id) {
+            if (confirm('Are you sure you want to delete this laptop?')) {
+                laptops = laptops.filter(laptop => laptop.id !== id);
+                renderLaptops();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            laptopModal.classList.remove('active');
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
